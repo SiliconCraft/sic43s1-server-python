@@ -28,7 +28,7 @@ def home():
     tag_rolling_code = request.args.get('RLC')
     
     try:
-        if tag_uid and tag_flag_tamper and tag_time_stamp and tag_rolling_code:
+        if len(tag_uid) and len(tag_flag_tamper) and len(tag_time_stamp) and len(tag_rolling_code):
             pass
     except:
         title = "SIC43S1: ERROR! - Wrong format params."
