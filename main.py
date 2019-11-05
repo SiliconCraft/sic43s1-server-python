@@ -26,7 +26,7 @@ def home():
     tag_flag_tamper = request.args.get('TF')
     tag_time_stamp = request.args.get('TS')
     tag_rolling_code = request.args.get('RLC')
-    
+
     try:
         if len(tag_uid) and len(tag_flag_tamper) and len(tag_time_stamp) and len(tag_rolling_code):
             pass
@@ -50,14 +50,14 @@ def home():
                 rolling_code_decision = 'N/A'
             )
 
-    if len(tag_uid) == 14 and len(tag_flag_tamper) == 2 and len(tag_time_stamp) == 8 and len(tag_rolling_code) == 90:
+    if len(tag_uid) == 14 and len(tag_flag_tamper) == 2 and len(tag_time_stamp) == 8 and len(tag_rolling_code) == 32 or len(tag_rolling_code) == 90:
         """
         Preraring Params
         
         1: Convert flag_tamper to hex eg. '00'=='3030','AA'=='4141'
         2: Check SIC43S1 RLC param, 
-            if RLC length == 32 maybe CMAC alg.
-            else if RLC length == 80 maybe OCB alg.
+            if RLC length == 32 CMAC alg.
+            else if RLC length == 90 OCB alg.
         """
         tag_uid = tag_uid.upper()
         tag_flag_tamper = tag_flag_tamper.upper()
@@ -111,25 +111,42 @@ def home():
             
 
         elif tag_uid[4:6] == '10' or tag_uid[4:6] == '20':
-            #### In Development ####
-            # s1_ocb()
-            return render_template(
-                        'index.html',
-                        title = 'SIC43S1(OCB) Demonstration',
-                        uid = 'N/A',
-                        key = 'N/A',
-                        flag_tamper = 'N/A',
-                        flag_tamper_from_server = 'N/A',
-                        flag_tamper_decision = 'N/A',
+            tag_ciphertext = tag_rolling_code[:82]
+            tag_mac = tag_rolling_code[82:]
+            
+            try:
+                conn = sqlite3.connect('./storage.db', isolation_level=None)
+                cur = conn.cursor()
+                cur.execute("SELECT * FROM s1storage WHERE UID=?", (tag_uid,))
+                server_uid, server_key, server_time_stamp, previous_rolling_code = cur.fetchone()
+                cur.close()
 
-                        time_stamp_int = 'N/A',
-                        time_stamp_from_server = 'N/A',
-                        time_stamp_decision = 'N/A',
+                server_rolling_code, server_mac = s1_ocb(tag_time_stamp, tag_ciphertext, tag_mac, server_key)
 
-                        rolling_code = 'N/A',
-                        rolling_code_from_server = 'N/A',
-                        rolling_code_decision = 'N/A'
-                    )
+                server_time_stamp_int = int(server_time_stamp)
+                tag_time_stamp_int = int(tag_time_stamp, 16)
+
+                time_stamp_decision, rolling_code_decision = decision_compare(tag_uid, tag_time_stamp_int, server_time_stamp_int, tag_mac, server_mac)
+
+                return render_template(
+                            'index.html',
+                            title = 'SIC43S1(OCB) Demonstration',
+                            uid = tag_uid,
+                            key = server_key,
+                            flag_tamper = tag_flag_tamper,
+                            flag_tamper_from_server = 'N/A',
+                            flag_tamper_decision = 'N/A',
+
+                            time_stamp_int = tag_time_stamp_int,
+                            time_stamp_from_server = server_time_stamp_int,
+                            time_stamp_decision = time_stamp_decision,
+
+                            rolling_code = tag_mac,
+                            rolling_code_from_server = server_mac,
+                            rolling_code_decision = rolling_code_decision
+                        )
+            except:
+                title = "SIC43S1: ERROR! - UID not found or Database error."
         else:
             title = "SIC43S1: ERROR! - Wrong UID format."
             pass

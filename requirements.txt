@@ -1,2 +1,2 @@
-flask
-pycryptodome
+flask==1.1.1
+pycryptodome==3.9.1
