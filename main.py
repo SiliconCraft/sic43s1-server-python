@@ -248,7 +248,7 @@ def added():
             if 'UNIQUE' in str(ee):
                 cur.execute("UPDATE s1storage SET Key=? WHERE UID=?", (key_params,uid_params))
                 conn.commit()
-                head_params = 'SIC43S1 Update UID or Key Successful!!'
+                head_params = 'SIC43S1 ppdate UID and Key Successful!!'
             else:
                 head_params = 'SIC43S1 Add UID Failure..',
                 uid_params = 'Wrong pattern'
