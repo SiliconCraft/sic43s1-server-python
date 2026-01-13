@@ -23,12 +23,12 @@ def home():
     """
     ####---- From URL ----####
     tag_uid = request.args.get('U')
-    tag_flag_tamper = request.args.get('TF')
+    tag_flag_temporary = request.args.get('TF')
     tag_time_stamp = request.args.get('TS')
     tag_rolling_code = request.args.get('RLC')
 
     try:
-        if len(tag_uid) and len(tag_flag_tamper) and len(tag_time_stamp) and len(tag_rolling_code):
+        if len(tag_uid) and len(tag_flag_temporary) and len(tag_time_stamp) and len(tag_rolling_code):
             pass
     except:
         title = "SIC43S1: ERROR! - Wrong format params."
@@ -37,9 +37,9 @@ def home():
                 title = title,
                 uid = 'N/A',
                 key = 'N/A',
-                flag_tamper = 'N/A',
-                flag_tamper_from_server = 'N/A',
-                flag_tamper_decision = 'N/A',
+                flag_temporary = 'N/A',
+                flag_temporary_from_server = 'N/A',
+                flag_temporary_decision = 'N/A',
 
                 time_stamp_int = 'N/A',
                 time_stamp_from_server = 'N/A',
@@ -50,21 +50,21 @@ def home():
                 rolling_code_decision = 'N/A'
             )
 
-    if len(tag_uid) == 14 and len(tag_flag_tamper) == 2 and len(tag_time_stamp) == 8 and len(tag_rolling_code) == 32 or len(tag_rolling_code) == 90:
+    if len(tag_uid) == 14 and len(tag_flag_temporary) == 2 and len(tag_time_stamp) == 8 and len(tag_rolling_code) == 32 or len(tag_rolling_code) == 90:
         """
         Preraring Params
         
-        1: Convert flag_tamper to hex eg. '00'=='3030','AA'=='4141'
+        1: Convert flag_temporary to hex eg. '00'=='3030','AA'=='4141'
         2: Check SIC43S1 RLC param, 
             if RLC length == 32 CMAC alg.
             else if RLC length == 90 OCB alg.
         """
         tag_uid = tag_uid.upper()
-        tag_flag_tamper = tag_flag_tamper.upper()
+        tag_flag_temporary = tag_flag_temporary.upper()
         tag_time_stamp = tag_time_stamp.upper()
         tag_rolling_code = tag_rolling_code.upper()
 
-        tag_flag_tamper_hex = tag_flag_tamper.encode('utf-8').hex()
+        tag_flag_temporary_hex = tag_flag_temporary.encode('utf-8').hex()
 
         """
         Checking UID
@@ -82,7 +82,7 @@ def home():
                 server_uid, server_key, server_time_stamp, previous_rolling_code = cur.fetchone()
                 cur.close()
 
-                server_rolling_code = s1_cmac(tag_time_stamp, tag_uid, tag_flag_tamper_hex, server_key)
+                server_rolling_code = s1_cmac(tag_time_stamp, tag_uid, tag_flag_temporary_hex, server_key)
 
                 server_time_stamp_int = int(server_time_stamp)
                 tag_time_stamp_int = int(tag_time_stamp, 16)
@@ -94,9 +94,9 @@ def home():
                             title = 'SIC43S1(CMAC) Demonstration',
                             uid = tag_uid,
                             key = server_key,
-                            flag_tamper = tag_flag_tamper,
-                            flag_tamper_from_server = 'N/A',
-                            flag_tamper_decision = 'N/A',
+                            flag_temporary = tag_flag_temporary,
+                            flag_temporary_from_server = 'N/A',
+                            flag_temporary_decision = 'N/A',
 
                             time_stamp_int = tag_time_stamp_int,
                             time_stamp_from_server = server_time_stamp_int,
@@ -133,9 +133,9 @@ def home():
                             title = 'SIC43S1(OCB) Demonstration',
                             uid = tag_uid,
                             key = server_key,
-                            flag_tamper = tag_flag_tamper,
-                            flag_tamper_from_server = 'N/A',
-                            flag_tamper_decision = 'N/A',
+                            flag_temporary = tag_flag_temporary,
+                            flag_temporary_from_server = 'N/A',
+                            flag_temporary_decision = 'N/A',
 
                             time_stamp_int = tag_time_stamp_int,
                             time_stamp_from_server = server_time_stamp_int,
@@ -159,9 +159,9 @@ def home():
                     title = title,
                     uid = 'N/A',
                     key = 'N/A',
-                    flag_tamper = 'N/A',
-                    flag_tamper_from_server = 'N/A',
-                    flag_tamper_decision = 'N/A',
+                    flag_temporary = 'N/A',
+                    flag_temporary_from_server = 'N/A',
+                    flag_temporary_decision = 'N/A',
 
                     time_stamp_int = 'N/A',
                     time_stamp_from_server = 'N/A',
