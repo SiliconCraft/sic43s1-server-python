@@ -3,67 +3,104 @@
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
 
 <style>
-    table,
-    th,
-    td {
-        border: 1px solid black;
-        border-collapse: collapse;
-    }
+  table,
+  th,
+  td {
+    border: 1px solid black;
+    border-collapse: collapse;
+  }
 
-    th,
-    td {
-        padding: 5px;
-        text-align: left;
-    }
+  th,
+  td {
+    padding: 5px;
+    text-align: left;
+  }
 </style>
 
 <head>
-    <meta charset="utf-8" />
-    <title>SIC43S1 Demonstration</title>
+  <meta charset="utf-8" />
+  <title>SIC43S1 Demonstration</title>
 </head>
 
 <body>
-    <h1>{{title}}</h1>
-    <table style="width:75%">
-        <tr>
-            <th>UID[7]</th>
-            <td colspan="3">{{uid}}</td>
-        </tr>
+  <h1>{{title}}</h1>
+  <table style="width:75%">
+    <tr>
+      <th>UID[7]</th>
+      <td colspan="3">{{uid}}</td>
+    </tr>
 
-        <tr>
-            <th>Default Key</th>
-            <td colspan="3">{{key}}</td>
-        </tr>
+    <tr>
+      <th>Default Key</th>
+      <td colspan="3">{{key}}</td>
+    </tr>
 
-        <tr>
-            <th>-</th>
-            <td>From Tag</td>
-            <td>From Server</td>
-            <td>Result</td>
-        </tr>
+    <tr>
+      <th>-</th>
+      <td>From Tag</td>
+      <td>From Server</td>
+      <td>Result</td>
+    </tr>
 
-        <tr>
-            <th>Temporary Flag(HEX)</th>
-            <td>{{flag_temporary}}</td>
-            <td>{{flag_temporary_from_server}}</td>
-            <td>{{flag_temporary_decision}}</td>
-        </tr>
+    {% if is_ocb%}
+    <tr>
+      <th>Secured Authenticated Code (HEX)</th>
+      <td>{{tag_sac}}</td>
+      <td>{{ server_sac }}</td>
+      <td>{{sac_status}}</td>
+    </tr>
 
-        <tr>
-            <th>Time Stamp(DEC)</th>
-            <td>{{time_stamp_int}}</td>
-            <td>{{time_stamp_from_server}}</td>
-            <td>{{time_stamp_decision}}</td>
-        </tr>
+    <tr>
+      <th>Timestamp (DEC)</th>
+      <td>{{ tag_timestamp_int}}</td>
+      <td>-</td>
+      <td>-</td>
+    </tr>
 
-        <tr>
-            <th>Rolling code(HEX)</th>
-            <td>{{rolling_code}}</td>
-            <td>{{rolling_code_from_server}}</td>
-            <td>{{rolling_code_decision}}</td>
-        </tr>
+    <tr>
+      <th>User Data (HEX)</th>
+      <td>-</td>
+      <td>{{ server_user_data }}</td>
+      <td>-</td>
+    </tr>
 
-    </table>
+    <tr>
+      <th>Verified UID (HEX)</th>
+      <td>{{ uid}}</td>
+      <td>{{ server_uid}}</td>
+      <td>{{ uid_status}}</td>
+    </tr>
+
+    <tr>
+      <th>Temporary Flag (HEX)</th>
+      <td>{{ tag_temporary_flag}}</td>
+      <td>{{ server_temporary_flag }}</td>
+      <td>{{temporary_flag_status}}</td>
+    </tr>
+    {% else %}
+    <tr>
+      <th>Temporary Flag (HEX)</th>
+      <td>{{ tag_temporary_flag}}</td>
+      <td>-</td>
+      <td>-</td>
+    </tr>
+
+    <tr>
+      <th>Timestamp (DEC)</th>
+      <td>{{ tag_timestamp_int}}</td>
+      <td>-</td>
+      <td>-</td>
+    </tr>
+
+    <tr>
+      <th>Secured Authenticated Code (HEX)</th>
+      <td>{{ tag_sac}}</td>
+      <td>{{ server_sac}}</td>
+      <td>{{ sac_status}}</td>
+    </tr>
+    {% endif %}
+
+  </table>
 </body>
 
 </html>
